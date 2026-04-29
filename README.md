@@ -114,11 +114,11 @@ The app will open at `http://localhost:8501`.
 ![alt text](assets/image_second_brekky.png)
 
 #### Dashboard views
-![alt text](assets/image_dash1.png)
+(assets/image_dash1.png)
 
-![alt text](assets/image_dash2.png)
+(assets/image_dash2.png)
 
-![alt text](assets/image_![alt text](image.png)dash3.png)
+(assets/image_dash3.png)
 ---
 
 ## Design Decisions
@@ -142,7 +142,7 @@ Plotly doesn't have a native calendar heatmap, so the dashboard builds one using
 
 ## Testing Summary
 
-*(To be added)*
+Testing was limited due to Gemnini API limits.
 
 ---
 
