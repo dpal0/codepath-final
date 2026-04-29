@@ -1,6 +1,14 @@
 # Ignore the entire data folder
-data/food-101-tiny
+data/food-101-tiny/
+log.json
+
 # Or ignore specific extensions
 *.jpg
 *.png
 *.zip
+
+# Ignore virtual environments
+.venv/
+
+# THE MOST IMPORTANT PART: Secret keys
+.env
