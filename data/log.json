@@ -1,0 +1,16 @@
+[
+  {
+    "timestamp": "2026-04-29T01:26:36.928195",
+    "image_path": "uploads/20260429_012636_115959.jpg",
+    "note": "",
+    "daily_goal": 2000,
+    "dish": "Beef bowl (Gyudon) with vegetables",
+    "estimated_calories": 550,
+    "portion": "medium",
+    "meal_time_guess": "snack",
+    "confidence": "high",
+    "note_calories_explicit": null,
+    "note_portion_explicit": null,
+    "note_dish_explicit": null
+  }
+]

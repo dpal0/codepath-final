@@ -1,0 +1,6 @@
+# Ignore the entire data folder
+data/food-101-tiny
+# Or ignore specific extensions
+*.jpg
+*.png
+*.zip
