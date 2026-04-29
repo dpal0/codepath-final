@@ -107,18 +107,38 @@ The app will open at `http://localhost:8501`.
 
 ## Sample Interactions
 
+## Sample Interactions
+
 ##### Uploading one meal
 ![meal1](assets/image.png)
+
+The Log Food tab lets you drag and drop a meal photo, optionally add a note,
+set your daily calorie goal, and choose whether to log it now or for a past
+date and time. The meal photo previews on the right instantly after upload.
 
 ##### Analysing your meal
 ![alt text](assets/image_second_brekky.png)
 
+Once you hit **Analyze & Log**, Gemini Vision processes the image in the
+background. The spinner confirms the AI is at work — no manual input needed
+beyond the photo itself.
+
 #### Dashboard views
-(assets/image_dash1.png)
 
-(assets/image_dash2.png)
+![alt text](assets/image_dash2.png)
 
-(assets/image_dash3.png)
+The dashboard gives you three at-a-glance metrics at the top: total meals
+logged, average calories per meal, and your most frequent meal time. Below,
+the Calorie Deficit Calendar marks each day as green (deficit) or gray
+(surplus), while the **When Do You Usually Eat?** bar chart breaks down your
+eating habits by hour of day.
+
+![alt text](assets/image_dash3.png)
+
+The Week View lays out every meal as a card, ordered left to right by time
+within each day. Each card shows the food photo, exact time eaten, dish name,
+and calorie + portion summary — giving you a visual timeline of your entire
+eating pattern for the week at a glance.
 ---
 
 ## Design Decisions
