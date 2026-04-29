@@ -3,8 +3,6 @@ data/food-101-tiny/
 log.json
 
 # Or ignore specific extensions
-*.jpg
-*.png
 *.zip
 
 # Ignore virtual environments
