@@ -3,6 +3,7 @@ from collections import defaultdict
 from datetime import datetime, date, timedelta
 import plotly.graph_objects as go
 import plotly.express as px
+import os
 
 
 def _parse_ts(ts: str) -> Optional[datetime]:
@@ -176,19 +177,123 @@ def build_calorie_trend(entries: List[dict]):
         line=dict(color="steelblue", width=2),
         marker=dict(size=7)
     ))
+    mode = "lines+markers" if len(days) > 1 else "markers"
+
+    fig.add_trace(go.Scatter(
+        x=days, y=cals,
+        mode=mode,
+        name="Calories Eaten",
+        line=dict(color="steelblue", width=2),
+        marker=dict(size=12)
+    ))
     fig.add_trace(go.Scatter(
         x=days, y=goals,
-        mode="lines",
+        mode=mode,
         name="Daily Goal",
-        line=dict(color="salmon", width=2, dash="dash")
+        line=dict(color="salmon", width=2, dash="dash"),
+        marker=dict(size=12)
     ))
+    
     fig.update_layout(
         height=280,
         margin=dict(l=10, r=10, t=10, b=10),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         legend=dict(orientation="h", yanchor="bottom", y=1.02),
-        xaxis=dict(showgrid=False),
+        xaxis=dict(showgrid=False, type="category"),
         yaxis=dict(title="kcal", showgrid=True, gridcolor="rgba(200,200,200,0.2)")
     )
     return fig
+
+def build_week_grid(entries: List[dict]):
+    """
+    Week grid view: days top to bottom, meals left to right within each day
+    ordered by time. Returns HTML string.
+    """
+    from collections import defaultdict
+
+    day_meals = defaultdict(list)
+
+    for e in entries:
+        dt = _parse_ts(e.get("timestamp", ""))
+        if not dt:
+            continue
+        day_label = dt.strftime("%A, %b %d")   # e.g. "Tuesday, Apr 29"
+        day_key = dt.date().isoformat()
+        day_meals[day_key].append({
+            "label": day_label,
+            "day_key": day_key,
+            "time": dt.strftime("%I:%M %p"),
+            "dish": e.get("dish", "Unknown"),
+            "calories": e.get("estimated_calories", "?"),
+            "portion": e.get("portion", "?"),
+            "image_path": e.get("image_path", None),
+            "sort_dt": dt
+        })
+
+    if not day_meals:
+        return None
+
+    # Sort days, sort meals within each day by time
+    sorted_days = sorted(day_meals.keys())
+    for k in sorted_days:
+        day_meals[k].sort(key=lambda x: x["sort_dt"])
+
+    # Build HTML
+    rows_html = ""
+    for day_key in sorted_days:
+        meals = day_meals[day_key]
+        day_label = meals[0]["label"]
+
+        cards_html = ""
+        for m in meals:
+            img_html = ""
+            if m["image_path"] and os.path.exists(m["image_path"]):
+                import base64
+                with open(m["image_path"], "rb") as f:
+                    b64 = base64.b64encode(f.read()).decode()
+                ext = m["image_path"].split(".")[-1].lower()
+                mime = "image/jpeg" if ext in ["jpg", "jpeg"] else f"image/{ext}"
+                img_html = f'<img src="data:{mime};base64,{b64}" style="width:100%;height:90px;object-fit:cover;border-radius:3px;margin-bottom:6px;">'
+
+            cards_html += f"""
+            <div style="
+                min-width:140px; max-width:160px;
+                background:#fffbf0;
+                border:1px solid #d4bc80;
+                border-radius:4px;
+                padding:8px;
+                flex-shrink:0;
+                font-family:'Sentient',Georgia,serif;
+            ">
+                {img_html}
+                <div style="font-size:0.7rem;color:#a08040;margin-bottom:2px;">{m['time']}</div>
+                <div style="font-size:0.85rem;font-weight:600;color:#2a1f0a;line-height:1.2;margin-bottom:4px;">{m['dish']}</div>
+                <div style="font-size:0.75rem;color:#6b5a2e;">{m['calories']} kcal · {m['portion']}</div>
+            </div>"""
+
+        rows_html += f"""
+        <div style="margin-bottom:16px;">
+            <div style="
+                font-family:'Sentient',Georgia,serif;
+                font-size:0.8rem;
+                font-weight:600;
+                color:#a08040;
+                letter-spacing:0.08em;
+                text-transform:uppercase;
+                margin-bottom:6px;
+            ">{day_label}</div>
+            <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;">
+                {cards_html}
+            </div>
+        </div>"""
+
+    return f"""
+    <div style="
+        background:rgba(253,248,236,0.6);
+        border:1px solid #d4bc80;
+        border-radius:6px;
+        padding:16px;
+    ">
+        {rows_html}
+    </div>"""

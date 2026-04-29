@@ -3,7 +3,80 @@ import os
 from datetime import datetime
 from food_logger.gemini_client import analyze_food
 from food_logger.storage import save_entry, load_all
-from food_logger.dashboard import build_heatmap, build_meal_time_chart, build_calorie_trend
+from food_logger.dashboard import build_heatmap, build_meal_time_chart, build_calorie_trend, build_week_grid
+
+st.markdown("""
+<style>
+@import url('https://api.fontshare.com/v2/css?f[]=sentient@400,500,700&display=swap');
+
+* {
+    font-family: 'Sentient', Georgia, serif !important;
+}
+
+/* Main background */
+.stApp {
+    background-color: #fdf8ec;
+    background-image:
+        linear-gradient(rgba(180, 160, 100, 0.15) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(180, 160, 100, 0.15) 1px, transparent 1px);
+    background-size: 32px 32px;
+}
+
+/* Sidebar and containers */
+section[data-testid="stSidebar"] {
+    background-color: #f5efd8;
+}
+
+/* Cards / metric blocks */
+div[data-testid="metric-container"] {
+    background-color: #fffbf0;
+    border: 1px solid #d4bc80;
+    border-radius: 4px;
+    padding: 12px;
+}
+
+/* Tabs */
+.stTabs [data-baseweb="tab"] {
+    font-family: 'Sentient', Georgia, serif !important;
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+}
+
+/* Buttons */
+.stButton > button {
+    font-family: 'Sentient', Georgia, serif !important;
+    background-color: #c8a84b;
+    color: #2a1f0a;
+    border: none;
+    border-radius: 3px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+}
+
+.stButton > button:hover {
+    background-color: #b8962f;
+    color: #fff;
+}
+
+/* Title */
+h1, h2, h3 {
+    letter-spacing: 0.02em;
+    color: #2a1f0a;
+}
+
+/* Input fields */
+.stTextInput input, .stTextArea textarea, .stNumberInput input {
+    background-color: #fffbf0;
+    border: 1px solid #d4bc80;
+    font-family: 'Sentient', Georgia, serif !important;
+}
+
+/* Divider */
+hr {
+    border-color: #d4bc80;
+}
+</style>
+""", unsafe_allow_html=True)
 
 st.set_page_config(
     page_title="FoodLog AI",
@@ -41,7 +114,12 @@ with tab1:
         retro = st.toggle("Log for a different date/time")
         if retro:
             retro_date = st.date_input("Date", value=datetime.now().date())
-            retro_time = st.time_input("Time", value=datetime.now().time())
+            retro_time_str = st.text_input("Time (HH:MM)", value=datetime.now().strftime("%H:%M"))
+            try:
+                retro_time = datetime.strptime(retro_time_str, "%H:%M").time()
+            except ValueError:
+                st.error("Please enter time as HH:MM (e.g. 13:30)")
+                retro_time = datetime.now().time()
             selected_timestamp = datetime.combine(retro_date, retro_time)
         else:
             selected_timestamp = datetime.now()
@@ -117,6 +195,11 @@ with tab2:
         fig_trend = build_calorie_trend(entries)
         if fig_trend:
             st.plotly_chart(fig_trend, use_container_width=True)
+        
+        st.subheader("🗓️ Week View")
+        week_html = build_week_grid(entries)
+        if week_html:
+            st.html(week_html)
 
         st.subheader("📋 Recent Entries")
         display_entries = []

@@ -107,8 +107,18 @@ The app will open at `http://localhost:8501`.
 
 ## Sample Interactions
 
-*(To be added with screenshots after testing)*
+##### Uploading one meal
+![meal1](assets/image.png)
 
+##### Analysing your meal
+![alt text](assets/image_second_brekky.png)
+
+#### Dashboard views
+![alt text](assets/image_dash1.png)
+
+![alt text](assets/image_dash2.png)
+
+![alt text](assets/image_![alt text](image.png)dash3.png)
 ---
 
 ## Design Decisions
